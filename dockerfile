@@ -4,4 +4,5 @@ WORKDIR /app
 
 COPY . /app
 
+RUN python -m pip install -U matplotlib==3.1.2
 RUN pip install -r requirements.txt

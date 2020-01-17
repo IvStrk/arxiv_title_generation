@@ -9,13 +9,20 @@
         <a href="{{ url }}" target="_blank">{{ url }}</a>
         <h2>Original Title</h2>
         <span>{{ title_orig }}</span>
-        <h2>Generated Title</h2>
+        <h2>Generated Titles</h2>
         <form action="{{ url_for('index')}}" method="POST"></form>
-            <textarea readonly name="text" rows="4" cols="60">{{ processed_text }}</textarea>
-            <br/>
-            <!-- <input type="submit" value="Go Back"> -->
+        <h3>Top hypothesis:</h3>
+        {{ title_hypothesis_1 }}
+        <h3>Other hypotheses:</h3>
+        {{ title_hypothesis_2 }}
+        </br>
+        {{ title_hypothesis_3 }}
+        </br>
+        {{ title_hypothesis_4 }}
         </form>
         <h2>Original Abstract</h2>
         <textarea readonly name="abstract" rows="20" cols="60">{{ abstract }}</textarea>
+        <h2>Attention heatmap</h2>
+        <img width="500px" src="{{ attention_filename }}" alt="Attention Heatmap">
     </body>
 </html>
