@@ -19,6 +19,7 @@ tokenizer = transformers.BertTokenizer.from_pretrained('./model/tokenizer')
 PAD_INDEX = 0
 BOS_INDEX = 101
 EOS_INDEX = 102
+MAX_IN_LEN = 512
 MAX_OUT_LEN = 50
 
 encoder_config = transformers.DistilBertConfig.from_pretrained('./model/encoder_config')
@@ -35,6 +36,8 @@ model.load_state_dict(model_dict)
 model.eval()
 
 del encoder
+del bert_encoder
+del torch_decoder
 
 def beam_search_batch(model, generate_len, tensor_in, beam_size, n_prev_tokens_exclude=3, model_extra_params=[]):
     model.eval()
@@ -91,13 +94,17 @@ def beam_search_batch(model, generate_len, tensor_in, beam_size, n_prev_tokens_e
     return generated_dict
 
 def display_attention(attention, sentence, translation, filename='foo.png'):
+    plt.subplots_adjust(top = 1, bottom = 0, right = 1, left = 0, hspace = 0, wspace = 0)
+    plt.margins(0,0)
     fig = plt.figure(figsize=(40,50))
     ax = fig.add_subplot(111)
 
-    sentence = sentence[:sentence.index(sentence[-1])]
-    attention = attention[:, :len(sentence)].numpy().T
+    if PAD_INDEX in sentence:
+        sentence = sentence[:sentence.index(PAD_INDEX)]
+
+    attention = -attention[:, :len(sentence)].numpy().T
     
-    cax = ax.matshow(attention, cmap='bone')
+    cax = ax.matshow(attention)
    
     ax.tick_params(labelsize=10)
     ax.set_yticklabels(['']+sentence)
@@ -106,10 +113,10 @@ def display_attention(attention, sentence, translation, filename='foo.png'):
     ax.xaxis.set_major_locator(ticker.MultipleLocator(1))
     ax.yaxis.set_major_locator(ticker.MultipleLocator(1))
 
-    plt.savefig(filename)
+    plt.savefig(filename, bbox_inches = 'tight', pad_inches=0)
 
 def generate_title_attention(text):
-    text_tensor = torch.LongTensor(tokenizer.encode(text)).unsqueeze(0).to(device)
+    text_tensor = torch.LongTensor(tokenizer.encode(text, add_special_tokens=True)[:MAX_IN_LEN]).unsqueeze(0).to(device)
     # forward pass through encoder
     text_encoded_params = model.encoder(text_tensor)
     # beam search
@@ -118,10 +125,10 @@ def generate_title_attention(text):
     # attention
     beam_top_res = beam_res_dict[0][0][1]
     beam_top_res_tensor = torch.LongTensor(beam_top_res).to(device).unsqueeze(0)
-    _, attention_tensors = torch_decoder.forward(beam_top_res_tensor, *text_encoded_params, MAX_OUT_LEN, True)
-    text_tokenized = tokenizer.tokenize(text)
+    _, attention_tensors = model.decoder(beam_top_res_tensor, *text_encoded_params, MAX_OUT_LEN, True)
+    text_tokenized = [tokenizer.decode([BOS_INDEX])] + tokenizer.tokenize(text)
     beam_res_tokenized = tokenizer.tokenize(tokenizer.decode(beam_top_res))
-    attention_filename = f'static/{hash(text)}.png'
+    attention_filename = f'static/{abs(hash(text))}.png'
     display_attention(attention_tensors[1][0].data, text_tokenized, beam_res_tokenized, attention_filename)
 
     return beam_res_dict_decoded, attention_filename
