@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Title generation result</title>
+    </head>
+    <body>
+        <h1>Title generation result</h1>
+        <h2>URL</h2>
+        <a href="{{ url }}" target="_blank">{{ url }}</a>
+        <h2>Original Title</h2>
+        <span>{{ title_orig }}</span>
+        <h2>Generated Title</h2>
+        <form action="{{ url_for('index')}}" method="POST"></form>
+            <textarea readonly name="text" rows="4" cols="60">{{ processed_text }}</textarea>
+            <br/>
+            <!-- <input type="submit" value="Go Back"> -->
+        </form>
+        <h2>Original Abstract</h2>
+        <textarea readonly name="abstract" rows="20" cols="60">{{ abstract }}</textarea>
+    </body>
+</html>

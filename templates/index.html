@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Generate title for arxiv paper</title>
+    </head>
+    <body>
+        <h1>Generate title for arxiv paper</h1>
+        <form action="{{ url_for('predict')}}" method="POST">
+            <textarea name="text" rows="1" cols="50"></textarea>
+            <br/>
+            <input type="submit" value="Generate">
+        </form>
+    </body>
+</html>
