@@ -1,10 +1,6 @@
 import torch
-import torchtext
-from glob import glob
-# import pickle
-from model_class import *
+from model_class import myBertModel, myTorchDecoder, BertDecoderModel
 from flask import Flask, request, render_template
-# import spacy
 import bs4
 import requests
 import transformers
