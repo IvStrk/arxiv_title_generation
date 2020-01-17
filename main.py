@@ -24,7 +24,6 @@ encoder = transformers.DistilBertModel(encoder_config)
 
 bert_encoder = myBertModel(encoder, PAD_INDEX)
 torch_decoder = myTorchDecoder(bert_encoder.get_embedding(), padding_idx=PAD_INDEX)
-# del encoder
 
 vocab_size_out, emb_size_decoder = torch_decoder.get_embedding_dim()
 model = BertDecoderModel(bert_encoder, torch_decoder, emb_size_decoder, vocab_size_out).to(device)
@@ -32,6 +31,8 @@ model_dict = torch.load('./model/model.pt', map_location=device)
 model_dict
 model.load_state_dict(model_dict)
 model.eval()
+
+del encoder
 
 @app.route('/', methods=['POST','GET'])
 def index():

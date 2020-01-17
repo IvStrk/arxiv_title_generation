@@ -1,3 +1,4 @@
 *.pt
 .vscode
 __pycache__
+.bash_history
